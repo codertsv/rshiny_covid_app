@@ -20,8 +20,13 @@ if(file.exists(file.name)) {
 shinyServer(function(input, output) {
     
     
-    # Step 3: define a total worldwide:
-    TotalWorldwide <- sum(global_data$cumulative_confirmed, na.rm=T)
+    # Step 3: Define the total number of cases worldwide!
+	TotalWorldwide <- 
+		global_data %>%
+		filter(date == last_date) %>% # subset the data based on last available date
+		pull(cumulative_confirmed) %>% # get only the confirmed cases col
+		sum() # sum the cases together
+	
     # Add to server output: Total COVID-19 worldwide
     output$TotalWorldwide <- renderText({ TotalWorldwide })
     
@@ -69,7 +74,7 @@ shinyServer(function(input, output) {
                 aes(x=days_since_first, y = cumulative_deaths, color=country, label = country))
         # Step 7: add in slider input (^above)
         
-        # Step 8: do the same plot, but using ggplotly!
+        # Step 8: do the same plot, but using ggplotly (inefficient on server...)
         # no need for slider input now!
         # ggplotly(ggplt, tiptool = c("country", "cumulative_deaths", "date"),
         #          dynamicTicks=T) %>%
